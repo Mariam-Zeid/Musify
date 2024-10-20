@@ -1,11 +1,11 @@
-import EditProfileForm from "@/components/pages/profile/updateProfileForm";
+import UpdateProfileForm from "@/components/pages/profile/updateProfileForm";
 
-const EditAccountPage = () => {
+const UpdateAccountPage = () => {
   return (
     <div className="flex justify-center">
-      <EditProfileForm />
+      <UpdateProfileForm />
     </div>
   );
 };
 
-export default EditAccountPage;
+export default UpdateAccountPage;

@@ -28,6 +28,7 @@ interface FormProps {
     type: string;
     placeholder?: string;
     accept?: string;
+    disabled?: boolean;
   }[];
   title: string;
   description: string;
@@ -72,7 +73,7 @@ const FormAction = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <div className="flex flex-col gap-5">
-            {fields.map(({ name, label, type, placeholder, accept }) => (
+            {fields.map(({ name, label, type, placeholder, accept, disabled }) => (
               <FormField
                 key={name}
                 control={form.control}
@@ -85,7 +86,7 @@ const FormAction = ({
                         type={type}
                         placeholder={placeholder}
                         accept={accept}
-                        disabled={isPending}
+                        disabled={isPending || disabled}
                         {...field}
                         {...form.register(name)}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
