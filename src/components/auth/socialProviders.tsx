@@ -1,12 +1,13 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 
 export function SocialProviders() {
   const onClick = async (provider: string) => {
-    console.log(provider);
+    await signIn(provider, { callbackUrl: "/" });
   };
   return (
     <div className="flex items-center w-full gap-2">
@@ -19,7 +20,7 @@ export function SocialProviders() {
       </Button>
       <Button
         type="button"
-        onClick={() => onClick("google")}
+        onClick={() => onClick("github")}
         className="w-full py-6 flex justify-center rounded-lg bg-[#2e2e2e] hover:bg-[#3e3e3e] transition"
       >
         <FaGithub className="size-6" />

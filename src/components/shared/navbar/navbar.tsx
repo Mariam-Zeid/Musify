@@ -10,6 +10,7 @@ import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import UserButton from "./userButton";
+import { useCurrentUser } from "@/client/store/useCurrentUser";
 
 interface NavbarProps {
   children?: React.ReactNode;
@@ -18,6 +19,7 @@ interface NavbarProps {
 
 const Navbar = ({ children, className }: NavbarProps) => {
   const router = useRouter();
+  const { user } = useCurrentUser();
 
   return (
     <div className={cn(`h-fit p-6 pb-4`, className)}>
@@ -47,13 +49,18 @@ const Navbar = ({ children, className }: NavbarProps) => {
           </button>
         </div>
         <div className="flex justufy-between items-center gap-x-4">
-          <Button variant="ghost">
-            <Link href="/auth/register">Signup</Link>
-          </Button>
-          <Button size="lg" variant="secondary">
-            <Link href="/auth/login">Login</Link>
-          </Button>
-          <UserButton />
+          {user ? (
+            <UserButton />
+          ) : (
+            <>
+              <Button variant="ghost">
+                <Link href="/auth/register">Signup</Link>
+              </Button>
+              <Button size="lg" variant="secondary">
+                <Link href="/auth/login">Login</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
       {children}

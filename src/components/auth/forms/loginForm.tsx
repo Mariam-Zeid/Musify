@@ -2,15 +2,31 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { FieldValues } from "react-hook-form";
 import FormAction from "@/components/shared/form/formAction";
 import { loginSchema } from "@/lib/validations/auth";
+import { login } from "@/server/actions/auth";
+import { useCurrentUser } from "@/client/store/useCurrentUser";
 
 const LoginForm = () => {
+  const { update } = useCurrentUser();
   const [formError, setFormError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already linked with another account."
+      : "";
+
   const onSubmit = async (values: FieldValues) => {
     setFormError(null);
-    console.log(values);
+    const { email, password } = values;
+    const result = await login({ email, password });
+    if (result?.error) {
+      setFormError(result.error);
+      return;
+    }
+    update();
   };
   return (
     <FormAction
@@ -37,7 +53,7 @@ const LoginForm = () => {
       title="Login"
       description="Login to your account"
       buttonText="Login"
-      error={formError || ""}
+      error={formError || urlError || ""}
       showSocialProviders={true}
     >
       <button type="button" className="self-start text-sm font-light underline">

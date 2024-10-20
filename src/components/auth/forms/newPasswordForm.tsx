@@ -4,12 +4,19 @@ import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import FormAction from "@/components/shared/form/formAction";
 import { loginSchema } from "@/lib/validations/auth";
+import { newPassword } from "@/server/actions/auth";
 
 const NewPasswordForm = () => {
   const [formError, setFormError] = useState<string | null>(null);
+
   const onSubmit = async (values: FieldValues) => {
     setFormError(null);
-    console.log(values);
+    const { password } = values;
+    const result = await newPassword({ password });
+    if (result?.error) {
+      setFormError(result.error);
+      return;
+    }
   };
 
   return (

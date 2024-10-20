@@ -4,12 +4,19 @@ import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import FormAction from "@/components/shared/form/formAction";
 import { verificationOtpSchema } from "@/lib/validations/auth";
+import { verificationOTP } from "@/server/actions/auth";
 
 const VerificationOTPForm = () => {
   const [formError, setFormError] = useState<string | null>(null);
+
   const onSubmit = async (values: FieldValues) => {
     setFormError(null);
-    console.log(values);
+    const { otp } = values;
+    const result = await verificationOTP({ otp });
+    if (result?.error) {
+      setFormError(result.error);
+      return;
+    }
   };
 
   return (

@@ -5,12 +5,19 @@ import Link from "next/link";
 import { FieldValues } from "react-hook-form";
 import FormAction from "@/components/shared/form/formAction";
 import { resetPasswordSchema } from "@/lib/validations/auth";
+import { resetPassword } from "@/server/actions/auth";
 
 const ResetPasswordForm = () => {
   const [formError, setFormError] = useState<string | null>(null);
+
   const onSubmit = async (values: FieldValues) => {
     setFormError(null);
-    console.log(values);
+    const { email } = values;
+    const result = await resetPassword({ email });
+    if (result?.error) {
+      setFormError(result.error);
+      return;
+    }
   };
 
   return (

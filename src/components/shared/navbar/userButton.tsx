@@ -1,5 +1,6 @@
 "use client";
 
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { BiLogOut } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
@@ -12,12 +13,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useCurrentUser } from "@/client/store/useCurrentUser";
 
 const UserButton = () => {
   const router = useRouter();
+  const { user, update } = useCurrentUser();
 
   const handleLogout = async () => {
-    console.log("logging out");
+    await signOut();
+    await update();
   };
 
   return (
@@ -25,7 +29,7 @@ const UserButton = () => {
       <DropdownMenuTrigger className="cursor-pointer rounded-full">
         <Avatar>
           <AvatarImage
-            src={"https://github.com/shadcn.png"}
+            src={user?.image || "https://github.com/shadcn.png"}
             alt="user image"
           />
           <AvatarFallback className="bg-white">

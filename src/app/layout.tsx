@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 
 import "./globals.css";
+import { auth } from "@/auth";
 import Sidebar from "@/components/shared/sidebar/sidebar";
 import Navbar from "@/components/shared/navbar/navbar";
 import Loading from "@/components/shared/loading/loading";
@@ -20,9 +22,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html lang="en">
       <body className={inter.className}>
+        <SessionProvider session={session}>
           <Sidebar>
             <Suspense fallback={<Loading />}>
               <div className="bg-neutral-900 bg-gradient-to-b from-emerald-800 to-35% text-neutral-400 rounded-lg w-full h-full overflow-hidden overflow-y-auto scrollbar">
@@ -32,6 +36,7 @@ export default async function RootLayout({
             </Suspense>
           </Sidebar>
           <MusicPlayer />
+        </SessionProvider>
       </body>
     </html>
   );
