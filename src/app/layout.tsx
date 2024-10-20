@@ -9,6 +9,7 @@ import Sidebar from "@/components/shared/sidebar/sidebar";
 import Navbar from "@/components/shared/navbar/navbar";
 import Loading from "@/components/shared/loading/loading";
 import MusicPlayer from "@/components/shared/music player/musicPlayer";
+import ReactQueryProvider from "@/providers/reactQueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,15 +28,17 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider session={session}>
-          <Sidebar>
-            <Suspense fallback={<Loading />}>
-              <div className="bg-neutral-900 bg-gradient-to-b from-emerald-800 to-35% text-neutral-400 rounded-lg w-full h-full overflow-hidden overflow-y-auto scrollbar">
-                <Navbar />
-                <div className="px-6 h-full">{children}</div>
-              </div>
-            </Suspense>
-          </Sidebar>
-          <MusicPlayer />
+          <ReactQueryProvider>
+            <Sidebar>
+              <Suspense fallback={<Loading />}>
+                <div className="bg-neutral-900 bg-gradient-to-b from-emerald-800 to-35% text-neutral-400 rounded-lg w-full h-full overflow-hidden overflow-y-auto scrollbar">
+                  <Navbar />
+                  <div className="px-6 h-full">{children}</div>
+                </div>
+              </Suspense>
+            </Sidebar>
+            <MusicPlayer />
+          </ReactQueryProvider>
         </SessionProvider>
       </body>
     </html>

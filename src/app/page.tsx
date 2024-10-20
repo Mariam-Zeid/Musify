@@ -1,8 +1,7 @@
 import FavoriteLink from "@/components/pages/home/favoriteLink";
 import Link from "next/link";
 import SongItemList from "@/components/shared/songs/songItemList";
-import SongCardListWrapper from "@/components/shared/songs/songCardListWrapper";
-import SongCard from "@/components/shared/songs/songCard";
+import TopArtists from "@/components/pages/artists/topArtists";
 
 const HomePage = async () => {
   return (
@@ -15,19 +14,12 @@ const HomePage = async () => {
       {/* TOP ARTISTS */}
       <div className="artists-wrapper">
         <div className="flex justify-between items-center">
-          <h2 className="text-white text-2xl font-semibold">Top Artists</h2>
+          <h2 className="text-white text-2xl font-semibold">Top 5 Artists</h2>
           <button>
             <Link href="/artists">See all</Link>
           </button>
         </div>
-        <SongCardListWrapper>
-          <Link href="/artists/1">
-            <SongCard imageSrc="" title="Tul8te" subtitle="" />
-          </Link>
-          <SongCard title="Tul8te" />
-          <SongCard title="Tul8te" />
-          <SongCard title="Tul8te" />
-        </SongCardListWrapper>
+        <TopArtists />
       </div>
 
       {/* Popular Songs */}

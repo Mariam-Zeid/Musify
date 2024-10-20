@@ -56,3 +56,10 @@ model ResetPasswordOTP {
 
   @@unique([email, otp])
 }
+
+model Artist {
+  id             String    @id @default(cuid())
+  name           String    @unique @db.VarChar
+  image          String?   @unique @db.VarChar
+  created_at     DateTime  @default(now())
+}
