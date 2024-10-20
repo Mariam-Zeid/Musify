@@ -9,6 +9,7 @@ import { HiHome } from "react-icons/hi";
 import { cn } from "@/lib/utils";
 import Library from "./library";
 import SidebarContentWrapper from "./sidebarContentWrapper";
+import useTrackPlayer from "@/client/store/useTrackPlayer";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ interface SidebarProps {
 
 const Sidebar = ({ children }: SidebarProps) => {
   const pathname = usePathname();
+  const { activeId } = useTrackPlayer();
 
   const routes = useMemo(
     () => [
@@ -38,7 +40,7 @@ const Sidebar = ({ children }: SidebarProps) => {
     <div
       className={cn(
         "flex h-full",
-        "h-[calc(100%-190px)] md:h-[calc(100%-120px)]"
+        activeId && "h-[calc(100%-190px)] md:h-[calc(100%-120px)]"
       )}
     >
       <div className="hidden md:flex flex-col gap-y-2 bg-black h-full w-[300px] p-2">

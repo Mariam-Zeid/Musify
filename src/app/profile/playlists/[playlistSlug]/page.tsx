@@ -5,7 +5,7 @@ const PlaylistPage = () => {
   return (
     <>
       <PageHeader type="playlist" title="Playlist 1" subtitle="playlist"/>
-      <SongItemList />
+      <SongItemList tracks={[]}/>
     </>
   );
 };

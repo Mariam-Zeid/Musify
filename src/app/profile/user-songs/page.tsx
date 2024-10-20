@@ -10,7 +10,7 @@ const UserOwnSongsPage = () => {
         subtitle="playlist"
         imageSrc="/images/song-logo.avif"
       />
-      <SongItemList />
+      <SongItemList tracks={[]}/>
     </>
   );
 };

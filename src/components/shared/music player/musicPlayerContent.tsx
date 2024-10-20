@@ -1,26 +1,162 @@
-import { BsPlayFill } from "react-icons/bs";
-import { HiSpeakerWave } from "react-icons/hi2";
-import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
-import { Slider } from "@/components/ui/slider";
-import SongItemRow from "../songs/songItemRow";
+"use client";
 
-const MusicPlayerContent = () => {
+import { useEffect, useState } from "react";
+import useSound from "use-sound";
+import { Track } from "@prisma/client";
+import { BsPauseFill, BsPlayFill } from "react-icons/bs";
+import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
+import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
+
+import SongItemRow from "@/components/shared/songs/songItemRow";
+import { Slider } from "@/components/ui/slider";
+import useTrackPlayer from "@/client/store/useTrackPlayer";
+
+interface AudioPlayerContentProps {
+  track: Track;
+  trackUrl: string;
+}
+const MusicPlayerContent = ({ track, trackUrl }: AudioPlayerContentProps) => {
+  const player = useTrackPlayer();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [volume, setVolume] = useState(100);
+
+  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
+  const Volume = volume > 0 ? HiSpeakerWave : HiSpeakerXMark;
+
+  const onPlayNext = () => {
+    if (player.ids.length === 0) {
+      return;
+    }
+
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const nextSong = player.ids[currentIndex + 1];
+
+    if (!nextSong) {
+      return player.setId(player.ids[0]);
+    }
+
+    player.setId(nextSong);
+  };
+
+  const onPlayPrevious = () => {
+    if (player.ids.length === 0) {
+      return;
+    }
+
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const previousSong = player.ids[currentIndex - 1];
+
+    if (!previousSong) {
+      return player.setId(player.ids[player.ids.length - 1]);
+    }
+
+    player.setId(previousSong);
+  };
+
+  const [play, { pause, sound }] = useSound(trackUrl, {
+    volume: volume / 100, // Set volume (0 to 1)
+    onplay: () => setIsPlaying(true),
+    onend: () => {
+      setIsPlaying(false);
+      onPlayNext();
+    },
+    onpause: () => setIsPlaying(false),
+    format: ["mp3"],
+  });
+
+  // Automatically play the song when trackUrl changes
+  useEffect(() => {
+    if (sound) {
+      play(); // Automatically play the new track
+      return () => {
+        sound.stop(); // Stop the current track when switching
+      };
+    }
+  }, [trackUrl, play, sound]);
+
+  // Update the current time as the track plays
+  useEffect(() => {
+    if (sound) {
+      const updateCurrentTime = () => {
+        setCurrentTime(sound.seek([]));
+        if (sound.duration()) setDuration(sound.duration());
+      };
+
+      const interval = setInterval(updateCurrentTime, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [sound]);
+
+  const handlePlay = () => {
+    if (!isPlaying) {
+      play();
+    } else {
+      pause();
+    }
+  };
+
+  const handleSeek = (value: number[]) => {
+    if (sound) {
+      sound.seek((value[0] / 100) * duration); // Seek based on slider position
+    }
+  };
+
+  // Helper function to format time (mm:ss)
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const handleVolumeChange = (value: number[]) => {
+    const newVolume = value[0]; // Value is expected to be between 0 and 100
+    setVolume(newVolume);
+    if (sound) {
+      sound.volume(newVolume / 100); // Update sound volume
+    }
+  };
+
+  const toggleMute = () => {
+    if (volume > 0) {
+      setVolume(0);
+    } else {
+      setVolume(100);
+    }
+    if (sound) {
+      sound.volume(volume > 0 ? 0 : 1);
+    }
+  };
+
   return (
     <>
       {/* DESKTOP */}
       <div className="hidden md:flex gap-x-12">
         {/* Media item */}
-        <div className="wrapper">
-          <SongItemRow title="Habeebe leeh" subtitle="Tul8te" />
+        <div className="wrapper w-[330px]">
+          <SongItemRow
+            track={track}
+            title={track.name}
+            // @ts-expect-error Property 'artist' does not exist on type 'Track'
+            subtitle={track.artist.name}
+            // @ts-expect-error Property 'album' does not exist on type 'Track'
+            imageSrc={track.image || track?.album?.image || ""}
+          />
         </div>
 
         {/* Play Controllers  */}
         <div className="wrapper flex-grow">
           <div className="flex flex-col gap-y-1">
-            <Slider value={[30]} max={100} step={1} />
+            <Slider
+              value={[(currentTime / duration) * 100 || 0]}
+              onValueChange={handleSeek}
+              max={100}
+              step={1}
+            />
             <div className="duration-wrapper flex justify-between">
-              <p>00:00</p>
-              <p>02:03</p>
+              <p>{formatTime(currentTime)}</p>
+              <p>{formatTime(duration)}</p>
             </div>
           </div>
           <div
@@ -33,6 +169,7 @@ const MusicPlayerContent = () => {
           "
           >
             <AiFillStepBackward
+              onClick={onPlayPrevious}
               size={30}
               className="
               text-neutral-400 
@@ -42,6 +179,7 @@ const MusicPlayerContent = () => {
             "
             />
             <div
+              onClick={handlePlay}
               className="
               flex 
               items-center 
@@ -54,10 +192,11 @@ const MusicPlayerContent = () => {
               cursor-pointer
             "
             >
-              <BsPlayFill size={30} className="text-black" />
+              <Icon size={30} className="text-black" />
             </div>
 
             <AiFillStepForward
+              onClick={onPlayNext}
               size={30}
               className="
               text-neutral-400 
@@ -72,8 +211,13 @@ const MusicPlayerContent = () => {
         {/* Volume Controller */}
         <div className="wrapper">
           <div className="flex items-center gap-x-2 w-[140px] h-full">
-            <HiSpeakerWave className="cursor-pointer" size={34} />
-            <Slider value={[30]} max={100} step={1} />
+            <Volume className="cursor-pointer" size={34} onClick={toggleMute} />
+            <Slider
+              value={[volume]}
+              onValueChange={handleVolumeChange}
+              max={100}
+              step={1}
+            />
           </div>
         </div>
       </div>
@@ -82,16 +226,28 @@ const MusicPlayerContent = () => {
       <div className="md:hidden flex flex-col gap-y-4">
         {/* Media item */}
         <div className="wrapper">
-          <SongItemRow title="Habeebe leeh" subtitle="Tul8te" />
+          <SongItemRow
+            track={track}
+            title={track.name}
+            // @ts-expect-error Property 'artist' does not exist on type 'Track'
+            subtitle={track.artist.name}
+            // @ts-expect-error Property 'album' does not exist on type 'Track'
+            imageSrc={track.image || track?.album?.image || ""}
+          />
         </div>
 
         {/* Play Controllers  */}
         <div className="wrapper">
           <div className="flex flex-col gap-y-2 w-full">
-            <Slider value={[30]} max={100} step={1} />
+            <Slider
+              value={[(currentTime / duration) * 100 || 0]}
+              onValueChange={handleSeek}
+              max={100}
+              step={1}
+            />
             <div className="duration-wrapper flex justify-between">
-              <p>00:00</p>
-              <p>02:03</p>
+              <p>{formatTime(currentTime)}</p>
+              <p>{formatTime(duration)}</p>
             </div>
           </div>
           <div
@@ -104,6 +260,7 @@ const MusicPlayerContent = () => {
           "
           >
             <AiFillStepBackward
+              onClick={onPlayPrevious}
               size={30}
               className="
               text-neutral-400 
@@ -113,6 +270,7 @@ const MusicPlayerContent = () => {
             "
             />
             <div
+              onClick={handlePlay}
               className="
               flex 
               items-center 
@@ -125,10 +283,11 @@ const MusicPlayerContent = () => {
               cursor-pointer
             "
             >
-              <BsPlayFill size={35} className="text-black" />
+              <Icon size={35} className="text-black" />
             </div>
 
             <AiFillStepForward
+              onClick={onPlayNext}
               size={30}
               className="
               text-neutral-400 

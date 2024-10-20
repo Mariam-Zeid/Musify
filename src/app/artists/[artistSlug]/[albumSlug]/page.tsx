@@ -1,9 +1,9 @@
 "use client";
 
 import { useAlbumsMutations, useArtistAlbum } from "@/client/hooks/useAlbums";
+import AlbumTracks from "@/components/pages/tracks/albumTracks";
 import Loading from "@/components/shared/loading/loading";
 import PageHeader from "@/components/shared/page header/pageHeader";
-import SongItemList from "@/components/shared/songs/songItemList";
 
 interface AlbumProps {
   params: {
@@ -34,7 +34,7 @@ const AlbumPage = ({ params }: AlbumProps) => {
         onDelete={() => deleteAlbum(album?.id ?? "")}
       />
       <div className="wrapper">
-        <SongItemList />
+        <AlbumTracks albumId={album?.id ?? ""} />
       </div>
     </div>
   );

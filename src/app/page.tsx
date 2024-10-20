@@ -1,7 +1,7 @@
 import FavoriteLink from "@/components/pages/home/favoriteLink";
 import Link from "next/link";
-import SongItemList from "@/components/shared/songs/songItemList";
 import TopArtists from "@/components/pages/artists/topArtists";
+import AllTracks from "@/components/pages/tracks/allTracks";
 
 const HomePage = async () => {
   return (
@@ -24,8 +24,10 @@ const HomePage = async () => {
 
       {/* Popular Songs */}
       <div className="songs-wrapper">
-        <h1 className="text-white text-2xl font-semibold">Popular Songs</h1>
-        <SongItemList />
+        <h2 className="text-white text-2xl font-semibold mb-3">
+          Popular Songs
+        </h2>
+        <AllTracks />
       </div>
     </div>
   );

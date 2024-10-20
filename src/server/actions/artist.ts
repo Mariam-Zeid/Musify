@@ -54,7 +54,7 @@ export const deleteArtist = async (id: string) => {
       if (albumImageUrl) {
         const { error: removeAlbumImageError } = await deleteFile(
           albumImageUrl,
-          "album-images"
+          "artists"
         );
         if (removeAlbumImageError) {
           console.error(

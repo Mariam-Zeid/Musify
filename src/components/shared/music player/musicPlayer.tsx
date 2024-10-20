@@ -1,6 +1,33 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import MusicPlayerContent from "./musicPlayerContent";
+import useTrackPlayer from "@/client/store/useTrackPlayer";
+import { useTrackById } from "@/client/hooks/useTracks";
 
 const MusicPlayer = () => {
+  const player = useTrackPlayer();
+  const [trackId, setTrackId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (player.activeId) {
+      setTrackId(player.activeId);
+    }
+  }, [player.activeId, trackId]);
+
+  const { data: track, isLoading: isTrackLoading } = useTrackById({
+    trackId: trackId || "",
+  });
+
+  if (!trackId || !track) {
+    return null;
+  }
+
+  if (isTrackLoading) {
+    return null;
+  }
+
   return (
     <div
       className="
@@ -16,7 +43,7 @@ const MusicPlayer = () => {
         pb-10
       "
     >
-      <MusicPlayerContent />
+      <MusicPlayerContent track={track} trackUrl={track.audio_url} />
     </div>
   );
 };

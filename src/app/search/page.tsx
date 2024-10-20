@@ -7,7 +7,7 @@ const SearchPage = () => {
       <h1 className="text-white text-3xl font-semibold">Search</h1>
       <div className="mt-5 mb-7">
         <SearchInput />
-        <SongItemList />
+        <SongItemList tracks={[]} />
       </div>
     </>
   );

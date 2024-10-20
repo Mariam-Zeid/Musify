@@ -62,8 +62,9 @@ model Artist {
   name           String    @unique @db.VarChar
   image          String?   @unique @db.VarChar
   created_at     DateTime  @default(now())
-  
+
   albums         Album[] 
+  tracks         Track[]
 }
 model Album {
   id            String    @id @default(cuid())
@@ -72,4 +73,17 @@ model Album {
   artist_id     String    @map("artist_id")
 
   artist        Artist   @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+  tracks        Track[]
+}
+model Track {
+  id          String    @id @default(cuid())
+  name        String    @db.VarChar
+  image       String?
+  audio_url   String    @db.VarChar
+  album_id    String    @map("album_id")
+  artist_id   String    @map("artist_id")
+  created_at  DateTime  @default(now())
+
+  album       Album?    @relation(fields: [album_id], references: [id], onDelete: Cascade)
+  artist      Artist?   @relation(fields: [artist_id], references: [id], onDelete: Cascade)
 }

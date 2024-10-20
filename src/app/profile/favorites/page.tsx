@@ -5,7 +5,7 @@ const LikedPage = () => {
   return (
     <>
       <PageHeader type="favorites" title="Favorites" subtitle="playlist"/>
-      <SongItemList />
+      <SongItemList tracks={[]} />
     </>
   );
 };
