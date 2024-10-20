@@ -5,6 +5,7 @@ import { prisma } from "@/server/db";
 import { addArtistSchema, AddArtistSchema } from "@/lib/validations/artist";
 import { getArtistById, getArtistByName } from "@/server/data/artist";
 import { deleteFile } from "@/lib/supabaseBuckets";
+import { getAlbumsByArtistId } from "@/server/data/album";
 
 export const addArtist = async (values: AddArtistSchema) => {
   const validatedFields = addArtistSchema.safeParse(values);
@@ -36,8 +37,32 @@ export const deleteArtist = async (id: string) => {
 
   const artistImageUrl = existingArtist.image;
 
-  await prisma.artist.delete({
-    where: { id },
+  await prisma.$transaction(async (prisma) => {
+    const albums = await getAlbumsByArtistId(id);
+
+    const albumImageUrls = albums.map((album) => album.image);
+
+    await prisma.album.deleteMany({
+      where: { artist_id: id },
+    });
+
+    await prisma.artist.delete({
+      where: { id },
+    });
+
+    for (const albumImageUrl of albumImageUrls) {
+      if (albumImageUrl) {
+        const { error: removeAlbumImageError } = await deleteFile(
+          albumImageUrl,
+          "album-images"
+        );
+        if (removeAlbumImageError) {
+          console.error(
+            `Album image deletion failed: ${removeAlbumImageError}`
+          );
+        }
+      }
+    }
   });
 
   if (artistImageUrl) {
@@ -48,5 +73,6 @@ export const deleteArtist = async (id: string) => {
       };
     }
   }
+  
   redirect("/artists");
 };

@@ -62,4 +62,14 @@ model Artist {
   name           String    @unique @db.VarChar
   image          String?   @unique @db.VarChar
   created_at     DateTime  @default(now())
+  
+  albums         Album[] 
+}
+model Album {
+  id            String    @id @default(cuid())
+  name          String    @db.VarChar
+  image         String?   @db.VarChar
+  artist_id     String    @map("artist_id")
+
+  artist        Artist   @relation(fields: [artist_id], references: [id], onDelete: Cascade)
 }

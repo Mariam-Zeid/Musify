@@ -1,8 +1,10 @@
 "use client";
 
+import { UserRole } from "@prisma/client";
 import Image from "next/image";
 import DeleteButton from "./deleteButton";
 import LinkButton from "./linkButton";
+import { useCurrentRole } from "@/client/store/useCurrentUser";
 
 interface PageHeaderProps {
   imageSrc?: string;
@@ -22,6 +24,8 @@ const PageHeader = ({
   linkText,
   onDelete,
 }: PageHeaderProps) => {
+  const { role } = useCurrentRole();
+  const isAdmin = role === UserRole.ADMIN;
   return (
     <div className="my-10">
       <div className="flex flex-col md:flex-row items-center gap-x-5">
@@ -79,7 +83,7 @@ const PageHeader = ({
                 onDelete={onDelete || (() => {})}
               />
             )}
-            {type &&
+            {isAdmin && type &&
               type !== "user" &&
               type !== "favorites" &&
               type !== "userOwnSongs" &&
