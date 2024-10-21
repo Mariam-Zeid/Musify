@@ -65,7 +65,7 @@ const PageHeader = ({
                 />
               </>
             )}
-            {type === "userOwnSongs" && (
+            {type === "userSongs" && (
               <>
                 <LinkButton
                   href="/profile/user-songs/upload-song"
@@ -86,7 +86,7 @@ const PageHeader = ({
             {isAdmin && type &&
               type !== "user" &&
               type !== "favorites" &&
-              type !== "userOwnSongs" &&
+              type !== "userSongs" &&
               type !== "playlist" && (
                 <>
                   <LinkButton href={linkHref || ""} text={linkText || ""} />

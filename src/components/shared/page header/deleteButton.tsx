@@ -49,12 +49,12 @@ const DeleteButton = ({ type, onDelete }: DeleteButtonProps) => {
   return (
     <>
       <Button variant="destructive" onClick={() => setOpen(true)}>
-        {type === "favorites" || type === "userOwnSongs" ? "Clear" : "Delete"}{" "}
+        {type === "favorites" || type === "userSongs" ? "Clear" : "Delete"}{" "}
         {type === "user"
           ? "account"
           : type === "favorites"
           ? "favorites"
-          : type === "userOwnSongs"
+          : type === "userSongs"
           ? "playlist"
           : type}
       </Button>

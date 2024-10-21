@@ -1,6 +1,6 @@
 "use client";
 
-import { Track } from "@prisma/client";
+import { Track, UserTrack } from "@prisma/client";
 import { useRef } from "react";
 import {
   useFavoriteMutations,
@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import { BiHeart, BiSolidHeart } from "react-icons/bi";
 
 interface LikeButtonProps {
-  track: Track;
+  track: Track | UserTrack;
 }
 const LikeButton = ({ track }: LikeButtonProps) => {
   const { user } = useCurrentUser();
@@ -22,8 +22,7 @@ const LikeButton = ({ track }: LikeButtonProps) => {
 
   const requestInProgress = useRef(false);
 
-  console.log({ favorites });
-  const isLiked = favorites?.some((favorite) => favorite.track_id === track.id);
+  const isLiked = favorites?.some((favorite) => favorite.track_id === track?.id);
 
   const Icon = isLiked ? BiSolidHeart : BiHeart;
 

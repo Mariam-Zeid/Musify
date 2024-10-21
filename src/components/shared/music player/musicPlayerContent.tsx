@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
-import { Track } from "@prisma/client";
+import { Track, UserTrack } from "@prisma/client";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
@@ -12,7 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import useTrackPlayer from "@/client/store/useTrackPlayer";
 
 interface AudioPlayerContentProps {
-  track: Track;
+  track: Track | UserTrack;
   trackUrl: string;
 }
 const MusicPlayerContent = ({ track, trackUrl }: AudioPlayerContentProps) => {
@@ -137,11 +137,11 @@ const MusicPlayerContent = ({ track, trackUrl }: AudioPlayerContentProps) => {
         <div className="wrapper w-[330px]">
           <SongItemRow
             track={track}
-            title={track.name}
+            title={track?.name}
             // @ts-expect-error Property 'artist' does not exist on type 'Track'
-            subtitle={track.artist.name}
+            subtitle={track?.artist?.name || track?.user?.name}
             // @ts-expect-error Property 'album' does not exist on type 'Track'
-            imageSrc={track.image || track?.album?.image || ""}
+            imageSrc={track?.image || track?.album?.image || ""}
           />
         </div>
 
@@ -228,11 +228,11 @@ const MusicPlayerContent = ({ track, trackUrl }: AudioPlayerContentProps) => {
         <div className="wrapper">
           <SongItemRow
             track={track}
-            title={track.name}
+            title={track?.name}
             // @ts-expect-error Property 'artist' does not exist on type 'Track'
-            subtitle={track.artist.name}
+            subtitle={track?.artist?.name || track?.user?.name}
             // @ts-expect-error Property 'album' does not exist on type 'Track'
-            imageSrc={track.image || track?.album?.image || ""}
+            imageSrc={track?.image || track?.album?.image || ""}
           />
         </div>
 

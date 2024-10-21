@@ -23,6 +23,7 @@ model User {
   accounts              Account[]  
   playlists             Playlist[]
   favorites             FavoriteTrack[]
+  userTracks            UserTrack[] 
 }
 model Account {
   id                 String  @id @default(cuid())
@@ -112,13 +113,24 @@ model PlaylistTrack {
   @@unique([playlist_id, track_id])
 }
 model FavoriteTrack {
-  id          String   @id @default(cuid())
-  user_id     String?  @map("user_id")
-  track_id    String?  @map("track_id")
-  created_at  DateTime @default(now())
+  id            String   @id @default(cuid())
+  user_id       String?  @map("user_id")
+  track_id      String?  @map("track_id")
+  user_track_id String?  @map("user_track_id")
+  created_at    DateTime @default(now())
 
-  user        User?    @relation(fields: [user_id], references: [id])
-  track       Track?   @relation(fields: [track_id], references: [id])
+  user          User?    @relation(fields: [user_id], references: [id])
+  track         Track?   @relation(fields: [track_id], references: [id])
 
   @@unique([user_id, track_id]) 
+}
+model UserTrack {
+  id          String    @id @default(cuid())
+  name        String    @db.VarChar
+  image       String?
+  audio_url   String    @db.VarChar
+  user_id     String    @map("user_id")     
+
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade) 
+  created_at  DateTime  @default(now())   
 }

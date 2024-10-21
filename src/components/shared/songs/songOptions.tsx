@@ -32,7 +32,7 @@ const SongOptions = ({
   const { role } = useCurrentRole();
   const isAdmin = role === UserRole.ADMIN;
   const isPlaylistPage = pathname.startsWith("/profile/playlists");
-  // const isUserOwnTracksPage = pathname === "/profile/user-songs";
+  const isUserTracksPage = pathname === "/profile/user-songs";
 
   const handleDeleteConfirmation = () => {
     onDelete?.();
@@ -58,11 +58,11 @@ const SongOptions = ({
               </DropdownMenuItem>
             ))}
 
-          {/* {!isAdmin && isUserOwnTracksPage && (
+          {!isAdmin && isUserTracksPage && (
             <DropdownMenuItem onClick={() => setOpen(true)}>
               delete song
             </DropdownMenuItem>
-          )} */}
+          )}
           {isAdmin && (
             <DropdownMenuItem onClick={() => setOpen(true)}>
               delete song

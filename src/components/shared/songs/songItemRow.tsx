@@ -1,17 +1,18 @@
 "use client";
 
-import { Track } from "@prisma/client";
+import { Track, UserTrack } from "@prisma/client";
 import { useTrackMutations } from "@/client/hooks/useTracks";
 import LikeButton from "./likeButton";
 import SongItem from "./songItem";
 import SongOptions from "./songOptions";
 
 interface SongItemRowProps {
-  track?: Track;
+  track?: Track | UserTrack;
   imageSrc?: string;
   title?: string;
   subtitle?: string;
   onClick?: () => void;
+  showLikeButton?: boolean;
   showSongOptions?: boolean;
   onAddToPlaylist?: () => void;
   onRemoveFromPlaylist?: () => void;
@@ -23,6 +24,7 @@ const SongItemRow = ({
   title,
   subtitle,
   onClick,
+  showLikeButton = true,
   showSongOptions,
   onAddToPlaylist,
   onRemoveFromPlaylist,
@@ -35,7 +37,7 @@ const SongItemRow = ({
       <div className="flex-1" onClick={onClick}>
         <SongItem imageSrc={imageSrc} title={title} subtitle={subtitle} />
       </div>
-      <LikeButton track={track as Track} />
+      {showLikeButton && <LikeButton track={track as Track} />}
       <SongOptions
         onDelete={() => {
           deleteTrack(track?.id ?? "");

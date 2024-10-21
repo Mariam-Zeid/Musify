@@ -1,16 +1,17 @@
 "use client";
 
-import { Track } from "@prisma/client";
+import { Track, UserTrack } from "@prisma/client";
 import useOnPlayTrack from "@/client/store/useOnPlayTrack";
 import SongItemRow from "./songItemRow";
 import { usePlaylistMutations } from "@/client/hooks/usePlaylists";
 
-type Entity = Track;
+type Entity = Track | UserTrack;
 
 interface SongItemListProps {
   tracks: Entity[];
   playlistId?: string;
   onRemove?: () => void;
+  showLikeButton?: boolean;
   showSongOptions?: boolean;
   isInPlaylist?: boolean;
 }
@@ -18,6 +19,7 @@ interface SongItemListProps {
 const SongItemList = ({
   tracks,
   playlistId,
+  showLikeButton,
   showSongOptions,
   isInPlaylist,
 }: SongItemListProps) => {
@@ -46,14 +48,15 @@ const SongItemList = ({
           key={track.id}
           track={track}
           title={track.name}
-          // @ts-expect-error Property 'artist' does not exist on type 'Track'
-          subtitle={track?.artist?.name}
+          // @ts-expect-error Property 'artist, user' does not exist on type 'Track'
+          subtitle={track?.artist?.name || track?.user?.name}
           // @ts-expect-error Property 'album' does not exist on type 'Track'
           imageSrc={track.image || track?.album?.image || ""}
           onClick={() => onPlay(track.id)}
           onRemoveFromPlaylist={() => {
             handleRemoveTrack(track.id);
           }}
+          showLikeButton={showLikeButton}
           showSongOptions={showSongOptions}
           isInPlaylist={isInPlaylist}
         />
