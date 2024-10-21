@@ -8,9 +8,9 @@ const UserOwnSongsPage = () => {
         type="userOwnSongs"
         title="Bob's Songs"
         subtitle="playlist"
-        imageSrc="/images/song-logo.avif"
+        imageSrc="/images/my-playlist.jpg"
       />
-      <SongItemList tracks={[]}/>
+      <SongItemList tracks={[]} />
     </>
   );
 };

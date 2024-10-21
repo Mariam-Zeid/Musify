@@ -8,9 +8,12 @@ import SongCardListWrapper from "@/components/shared/songs/songCardListWrapper";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/client/store/useCurrentUser";
 import { deleteAccount } from "@/server/actions/user";
+import { useUserPlaylists } from "@/client/hooks/usePlaylists";
+import Loading from "@/components/shared/loading/loading";
 
 const ProfilePage = () => {
   const { user } = useCurrentUser();
+  const { data: playlists, isLoading, isRefetching } = useUserPlaylists();
 
   const handleDeleteAccount = async () => {
     if (user && user.id) {
@@ -18,8 +21,13 @@ const ProfilePage = () => {
       await signOut();
     }
   };
+
   if (!user) {
     return null;
+  }
+
+  if (isLoading || isRefetching) {
+    return <Loading />;
   }
 
   const capitalizeFirstLetter = (name: string) =>
@@ -50,12 +58,17 @@ const ProfilePage = () => {
             title={`${
               user?.name ? capitalizeFirstLetter(user.name.split(" ")[0]) : ""
             }'s Songs`}
-            imageSrc="/images/song-logo.avif"
+            imageSrc="/images/my-playlist.jpg"
           />
         </Link>
-        <Link href="/profile/playlists/playlist1">
-          <SongCard title="Playlist 1" />
-        </Link>
+        {playlists?.map((playlist) => (
+          <Link href={`/profile/playlists/${playlist.id}`} key={playlist.id}>
+            <SongCard
+              title={playlist.name}
+              imageSrc={playlist.image || "/images/song-logo.avif"}
+            />
+          </Link>
+        ))}
       </SongCardListWrapper>
     </>
   );

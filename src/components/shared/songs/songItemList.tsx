@@ -9,9 +9,10 @@ type Entity = Track;
 interface SongItemListProps {
   tracks: Entity[];
   showSongOptions?: boolean;
+  isInPlaylist?: boolean;
 }
 
-const SongItemList = ({ tracks , showSongOptions }: SongItemListProps) => {
+const SongItemList = ({ tracks , showSongOptions, isInPlaylist }: SongItemListProps) => {
   const onPlay = useOnPlayTrack(tracks || []);
 
   if (!tracks) {
@@ -38,6 +39,7 @@ const SongItemList = ({ tracks , showSongOptions }: SongItemListProps) => {
           imageSrc={track.image || track?.album?.image || ""}
           onClick={() => onPlay(track.id)}
           showSongOptions={showSongOptions}
+          isInPlaylist={isInPlaylist}
         />
       ))}
     </div>

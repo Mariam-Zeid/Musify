@@ -1,6 +1,6 @@
 "use client";
 
-// import { usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { UserRole } from "@prisma/client";
 import {
@@ -16,13 +16,22 @@ import { useCurrentRole } from "@/client/store/useCurrentUser";
 interface SongOptionsProps {
   showOptions?: boolean;
   onDelete?: () => void;
+  onAddToPlaylist?: () => void;
+  onRemoveFromPlaylist?: () => void;
+  isInPlaylist?: boolean;
 }
-const SongOptions = ({ showOptions = false, onDelete }: SongOptionsProps) => {
+const SongOptions = ({
+  showOptions = false,
+  onDelete,
+  onAddToPlaylist,
+  onRemoveFromPlaylist,
+  isInPlaylist = false,
+}: SongOptionsProps) => {
   const [open, setOpen] = useState(false);
-  // const pathname = usePathname();
+  const pathname = usePathname();
   const { role } = useCurrentRole();
   const isAdmin = role === UserRole.ADMIN;
-  // const isPlaylistPage = pathname.startsWith("/profile/playlists");
+  const isPlaylistPage = pathname.startsWith("/profile/playlists");
   // const isUserOwnTracksPage = pathname === "/profile/user-songs";
 
   const handleDeleteConfirmation = () => {
@@ -38,18 +47,27 @@ const SongOptions = ({ showOptions = false, onDelete }: SongOptionsProps) => {
           <HiDotsHorizontal className="cursor-pointer" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="mt-2" align="end">
-          {/* {isPlaylistPage ? (
-            <DropdownMenuItem>remove from playlist</DropdownMenuItem>
-          ) : (
-            <DropdownMenuItem>add to playlist</DropdownMenuItem>
-          )}
+          {isPlaylistPage &&
+            (isInPlaylist ? (
+              <DropdownMenuItem onClick={onRemoveFromPlaylist}>
+                remove from playlist
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem onClick={onAddToPlaylist}>
+                add to playlist
+              </DropdownMenuItem>
+            ))}
 
-          {!isAdmin && isUserOwnTracksPage && (
+          {/* {!isAdmin && isUserOwnTracksPage && (
             <DropdownMenuItem onClick={() => setOpen(true)}>
               delete song
             </DropdownMenuItem>
           )} */}
-          {isAdmin && <DropdownMenuItem onClick={() => setOpen(true)}>delete song</DropdownMenuItem>}
+          {isAdmin && (
+            <DropdownMenuItem onClick={() => setOpen(true)}>
+              delete song
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

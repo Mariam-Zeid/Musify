@@ -3,9 +3,11 @@ import { TbPlaylist } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai";
 import SongItem from "../songs/songItem";
 import { useCurrentUser } from "@/client/store/useCurrentUser";
+import { useUserPlaylists } from "@/client/hooks/usePlaylists";
 
 const Library = () => {
   const { user } = useCurrentUser();
+  const { data: playlists } = useUserPlaylists();
   const capitalizeFirstLetter = (name: string) =>
     name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 
@@ -33,9 +35,23 @@ const Library = () => {
               title={`${
                 user?.name ? capitalizeFirstLetter(user.name.split(" ")[0]) : ""
               }'s Songs`}
-              imageSrc="/images/song-logo.avif"
+              imageSrc="/images/my-playlist.jpg"
             />
           </Link>
+
+          {playlists?.map((playlist) => (
+            <Link
+              href={`/profile/playlists/${playlist.id}`}
+              key={playlist.id}
+              className="cursor-pointer"
+            >
+              <SongItem
+                imageSrc={playlist.image || "/images/song-logo.avif"}
+                title={playlist.name}
+                subtitle="Playlist"
+              />
+            </Link>
+          ))}
         </>
       ) : (
         <p className="text-neutral-400 px-3">Login to see your library</p>

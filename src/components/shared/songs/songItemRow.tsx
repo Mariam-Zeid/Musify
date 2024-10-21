@@ -7,12 +7,15 @@ import SongItem from "./songItem";
 import SongOptions from "./songOptions";
 
 interface SongItemRowProps {
-  track: Track;
+  track?: Track;
   imageSrc?: string;
   title?: string;
   subtitle?: string;
   onClick?: () => void;
   showSongOptions?: boolean;
+  onAddToPlaylist?: () => void;
+  onRemoveFromPlaylist?: () => void;
+  isInPlaylist?: boolean;
 }
 const SongItemRow = ({
   track,
@@ -21,6 +24,9 @@ const SongItemRow = ({
   subtitle,
   onClick,
   showSongOptions,
+  onAddToPlaylist,
+  onRemoveFromPlaylist,
+  isInPlaylist,
 }: SongItemRowProps) => {
   const { deleteTrack } = useTrackMutations();
 
@@ -32,10 +38,13 @@ const SongItemRow = ({
       <LikeButton />
       <SongOptions
         onDelete={() => {
-          deleteTrack(track.id);
+          deleteTrack(track?.id ?? "");
           window.location.reload();
         }}
         showOptions={showSongOptions}
+        onAddToPlaylist={onAddToPlaylist}
+        onRemoveFromPlaylist={onRemoveFromPlaylist}
+        isInPlaylist={isInPlaylist}
       />
     </div>
   );
