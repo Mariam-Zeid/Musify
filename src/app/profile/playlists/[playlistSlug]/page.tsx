@@ -6,6 +6,7 @@ import {
 } from "@/client/hooks/usePlaylists";
 import AddTracksToPlaylist from "@/components/pages/playlists/addTracksToPlaylist";
 import PlaylistTracks from "@/components/pages/playlists/playlistTracks";
+import Loading from "@/components/shared/loading/loading";
 import PageHeader from "@/components/shared/page header/pageHeader";
 
 interface PlaylistPageProps {
@@ -14,9 +15,13 @@ interface PlaylistPageProps {
   };
 }
 const PlaylistPage = ({ params }: PlaylistPageProps) => {
-  const { data: playlist } = usePlaylist({ playlistId: params.playlistSlug });
+  const { data: playlist, isLoading, isRefetching } = usePlaylist({ playlistId: params.playlistSlug });
   const { deletePlaylist } = useUserPlaylistsMutations();
 
+  if (isLoading || isRefetching) {
+    return <Loading />;
+  }
+  
   return (
     <>
       <PageHeader

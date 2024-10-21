@@ -27,7 +27,7 @@ export const addPlaylist = async (values: AddPlaylistSchema) => {
     return { error: "Playlist already exists!" };
   }
   await prisma.playlist.create({
-    data: { name, image, userId: user?.id },
+    data: { name, image, user_id: user?.id },
   });
 
   redirect("/profile");
@@ -67,9 +67,9 @@ export const addTrackToPlaylist = async (
 
   const existingTrackInPlaylist = await prisma.playlistTrack.findUnique({
     where: {
-      playlistId_trackId: {
-        playlistId,
-        trackId,
+      playlist_id_track_id: {
+        playlist_id: playlistId,
+        track_id: trackId,
       },
     },
   });
@@ -80,8 +80,8 @@ export const addTrackToPlaylist = async (
 
   await prisma.playlistTrack.create({
     data: {
-      playlistId,
-      trackId,
+      playlist_id: playlistId,
+      track_id: trackId,
     },
   });
 
@@ -93,9 +93,9 @@ export const removeTrackFromPlaylist = async (
 ) => {
   const existingTrackInPlaylist = await prisma.playlistTrack.findUnique({
     where: {
-      playlistId_trackId: {
-        playlistId,
-        trackId,
+      playlist_id_track_id: {
+        playlist_id: playlistId,
+        track_id: trackId,
       },
     },
   });
@@ -106,9 +106,9 @@ export const removeTrackFromPlaylist = async (
 
   await prisma.playlistTrack.delete({
     where: {
-      playlistId_trackId: {
-        playlistId,
-        trackId,
+      playlist_id_track_id: {
+        playlist_id: playlistId,
+        track_id: trackId,
       },
     },
   });

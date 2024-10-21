@@ -21,7 +21,8 @@ model User {
   emailVerified         DateTime?
 
   accounts              Account[]  
-  playlists            Playlist[]
+  playlists             Playlist[]
+  favorites             FavoriteTrack[]
 }
 model Account {
   id                 String  @id @default(cuid())
@@ -88,24 +89,36 @@ model Track {
   album       Album?    @relation(fields: [album_id], references: [id], onDelete: Cascade)
   artist      Artist?   @relation(fields: [artist_id], references: [id], onDelete: Cascade)
   playlists   PlaylistTrack[] 
+  favorites    FavoriteTrack[]
 }
 model Playlist {
   id                    String                   @id @default(cuid())
   name                  String                   @db.VarChar
   image                 String?
-  userId                String                   @map("user_id")
+  user_id                String                   @map("user_id")
   created_at            DateTime                 @default(now())
 
-  user                  User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  User                     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   tracks                PlaylistTrack[]          
 }
 model PlaylistTrack {
   id                    String                   @id @default(cuid())
-  playlistId            String                   @map("playlist_id")
-  trackId               String                   @map("track_id")
+  playlist_id            String                   @map("playlist_id")
+  track_id               String                   @map("track_id")
 
-  playlist              Playlist                 @relation(fields: [playlistId], references: [id], onDelete: Cascade)
-  track                 Track                    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  playlist              Playlist                 @relation(fields: [playlist_id], references: [id], onDelete: Cascade)
+  track                 Track                    @relation(fields: [track_id], references: [id], onDelete: Cascade)
 
-  @@unique([playlistId, trackId])
+  @@unique([playlist_id, track_id])
+}
+model FavoriteTrack {
+  id          String   @id @default(cuid())
+  user_id     String?  @map("user_id")
+  track_id    String?  @map("track_id")
+  created_at  DateTime @default(now())
+
+  user        User?    @relation(fields: [user_id], references: [id])
+  track       Track?   @relation(fields: [track_id], references: [id])
+
+  @@unique([user_id, track_id]) 
 }

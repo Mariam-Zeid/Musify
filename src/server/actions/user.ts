@@ -4,9 +4,13 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/server/db";
 import { getUserById } from "@/server/data/user";
 import { deleteFile } from "@/lib/supabaseBuckets";
-import { updateAccountSchema, UpdateAccountSchema } from "@/lib/validations/user";
+import {
+  updateAccountSchema,
+  UpdateAccountSchema,
+} from "@/lib/validations/user";
 import { currentUser } from "../currentUser";
 import { compare, hash } from "bcryptjs";
+import { getUserPlaylists } from "@/server/data/playlist";
 
 export const updateUser = async (values: UpdateAccountSchema) => {
   const validatedFields = updateAccountSchema.safeParse(values);
@@ -56,10 +60,7 @@ export const updateUser = async (values: UpdateAccountSchema) => {
     // Remove the old image if it exists
     const oldImageUrl = existingUser.image;
     if (oldImageUrl) {
-      const { error: removeError } = await deleteFile(
-        oldImageUrl,
-        "users"
-      );
+      const { error: removeError } = await deleteFile(oldImageUrl, "users");
       if (removeError) {
         return { error: `Old image removal failed: ${removeError}` };
       }
@@ -82,8 +83,44 @@ export const deleteAccount = async (id: string) => {
 
   const imageUrl = existingUser.image;
 
-  await prisma.user.delete({
-    where: { id },
+
+  await prisma.$transaction(async (prisma) => {
+    const playlists = await getUserPlaylists();
+
+    if (!playlists) {
+      return { error: "The user has no playlists" };
+    }
+
+    const playlistsImageUrls = playlists.map((playlist) => playlist.image);
+
+    // Delete all the user's favorite tracks
+    await prisma.favoriteTrack.deleteMany({
+      where: { user_id: id },
+    });
+
+    // Delete all the user's playlists
+    await prisma.playlist.deleteMany({
+      where: { user_id: id },
+    });
+
+    // Delete the user
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    for (const playlistImageUrl of playlistsImageUrls) {
+      if (playlistImageUrl) {
+        const { error: removeAlbumImageError } = await deleteFile(
+          playlistImageUrl,
+          "users"
+        );
+        if (removeAlbumImageError) {
+          console.error(
+            `Playlist image deletion failed: ${removeAlbumImageError}`
+          );
+        }
+      }
+    }
   });
 
   if (imageUrl) {

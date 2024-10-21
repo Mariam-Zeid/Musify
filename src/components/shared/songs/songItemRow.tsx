@@ -35,7 +35,7 @@ const SongItemRow = ({
       <div className="flex-1" onClick={onClick}>
         <SongItem imageSrc={imageSrc} title={title} subtitle={subtitle} />
       </div>
-      <LikeButton />
+      <LikeButton track={track as Track} />
       <SongOptions
         onDelete={() => {
           deleteTrack(track?.id ?? "");

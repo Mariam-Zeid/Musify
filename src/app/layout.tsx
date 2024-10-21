@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
 
 import "./globals.css";
 import { auth } from "@/auth";
@@ -29,6 +30,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <SessionProvider session={session}>
           <ReactQueryProvider>
+            <Toaster />
             <Sidebar>
               <Suspense fallback={<Loading />}>
                 <div className="bg-neutral-900 bg-gradient-to-b from-emerald-800 to-35% text-neutral-400 rounded-lg w-full h-full overflow-hidden overflow-y-auto scrollbar">

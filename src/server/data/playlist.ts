@@ -7,7 +7,7 @@ export const getUserPlaylists = async () => {
   const user = await currentUser();
   const userId = user?.id;
   const playlists = await prisma.playlist.findMany({
-    where: { userId },
+    where: { user_id: userId },
   });
 
   return playlists;
@@ -24,8 +24,9 @@ export const getPlaylistById = async (playlistId: string) => {
 };
 export const getPlaylistByName = async (name: string) => {
   try {
+    const user = await currentUser();
     const playlist = await prisma.playlist.findFirst({
-      where: { name },
+      where: { user_id: user?.id, name },
     });
     return playlist;
   } catch {
@@ -35,7 +36,7 @@ export const getPlaylistByName = async (name: string) => {
 export const getPlaylistTracks = async (playlistId: string) => {
   try {
     const tracks = await prisma.playlistTrack.findMany({
-      where: { playlistId },
+      where: { playlist_id: playlistId },
       include: {
         track: {
           include: {
