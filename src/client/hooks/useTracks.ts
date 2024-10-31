@@ -19,7 +19,7 @@ export const useAlbumTracks = ({ albumId }: { albumId: string }) => {
 };
 export const useTrackById = ({ trackId }: { trackId: string }) => {
   return useQuery({
-    queryKey: ["track", trackId],
+    queryKey: ["track", "TrackById", trackId],
     queryFn: async () => await getTrackById(trackId),
     enabled: !!trackId,
     staleTime: 1000 * 60 * 5,

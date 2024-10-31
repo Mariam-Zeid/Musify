@@ -6,6 +6,8 @@ import { prisma } from "@/server/db";
 import { addTrackSchema, AddTrackSchema } from "@/lib/validations/track";
 import { getTrackById, getTrackByName } from "@/server/data/track";
 import { deleteFile } from "@/lib/supabaseBuckets";
+import { getArtistById } from "../data/artist";
+import { getAlbumById } from "../data/album";
 
 export const addTrack = async (values: AddTrackSchema) => {
   const validatedFields = addTrackSchema.safeParse(values);
@@ -15,6 +17,14 @@ export const addTrack = async (values: AddTrackSchema) => {
   }
 
   const { name, image, audio_url, artist_id, album_id } = validatedFields.data;
+
+  // Verify artist and album exist
+  const artistExists = await getArtistById(artist_id);
+  const albumExists = await getAlbumById(album_id);
+
+  if (!artistExists || !albumExists) {
+    return { error: "Artist or album not found." };
+  }
 
   const existingTrack = await getTrackByName(
     validatedFields.data.name.toLowerCase()
