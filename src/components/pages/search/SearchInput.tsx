@@ -1,18 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
 
 import { Input } from "@/components/ui/input";
 
 const SearchInput = () => {
-  const [value, setValue] = useState<string>("");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const handleSearch = useDebouncedCallback((searchTerm: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (searchTerm) {
+      params.set("q", searchTerm);
+    } else {
+      params.delete("q");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }, 300);
 
   return (
     <Input
       className="bg-[hsl(var(--input-background)] border-none py-6"
       placeholder="What do you want to listen to?"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
+      defaultValue={searchParams.get("q") ?? ""}
+      onChange={(e) => handleSearch(e.target.value)}
     />
   );
 };

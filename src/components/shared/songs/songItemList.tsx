@@ -36,13 +36,15 @@ const SongItemList = ({
 
   if (tracks.length === 0) {
     return (
-      <div className="flex flex-col gap-y-2 w-full">
-        <p className="text-white text-center md:text-start">No tracks found</p>
+      <div className="flex flex-col gap-y-2 w-full mt-5">
+        <p className="text-neutral-400 text-center md:text-start">
+          No tracks found
+        </p>
       </div>
     );
   }
   return (
-    <div className="flex flex-col gap-y-2 w-full ">
+    <div className="flex flex-col gap-y-2 w-full mt-5">
       {tracks.map((track) => (
         <SongItemRow
           key={track.id}

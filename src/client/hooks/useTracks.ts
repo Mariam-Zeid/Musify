@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { getAllTracks, getTrackById, getTracksByAlbumId } from "@/server/data/track";
+import {
+  getAllTracks,
+  getTrackById,
+  getTracksByAlbumId,
+  getTracksByArtistName,
+  getTracksByTrackName,
+} from "@/server/data/track";
 import { addTrack, deleteTrack } from "@/server/actions/track";
 
 export const useAllTracks = () => {
@@ -10,6 +16,18 @@ export const useAllTracks = () => {
     staleTime: 1000 * 60 * 5,
   });
 }
+export const useTracksByNameOrArtist = ({ query }: { query: string }) => {
+  return useQuery({
+    queryKey: ["tracks", query],
+    queryFn: async () => {
+      const trackResults = await getTracksByTrackName(query);
+      const artistResults = await getTracksByArtistName(query);
+      return [...trackResults, ...artistResults];
+    },
+    enabled: !!query,
+    staleTime: 1000 * 60 * 5,
+  });
+};
 export const useAlbumTracks = ({ albumId }: { albumId: string }) => {
   return useQuery({
     queryKey: ["album-tracks"],

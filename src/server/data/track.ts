@@ -12,6 +12,28 @@ export const getAllTracks = async () => {
     return null;
   }
 };
+export const getTracksByTrackName = async (name: string) => {
+  try {
+    const tracks = await prisma.track.findMany({
+      where: { name: { contains: name, mode: "insensitive" } },
+      include: { artist: true, album: true },
+    });
+    return tracks || [];
+  } catch {
+    return [];
+  }
+};
+export const getTracksByArtistName = async (name: string) => {
+  try {
+    const tracks = await prisma.track.findMany({
+      where: { artist: { name: { contains: name, mode: "insensitive" } } },
+      include: { artist: true, album: true },
+    });
+    return tracks || [];
+  } catch {
+    return [];
+  }
+};
 export const getTrackById = async (id: string) => {
   try {
     const track = await prisma.track.findUnique({
