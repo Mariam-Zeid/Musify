@@ -83,7 +83,6 @@ export const deleteAccount = async (id: string) => {
 
   const imageUrl = existingUser.image;
 
-
   await prisma.$transaction(async (prisma) => {
     const playlists = await getUserPlaylists();
 
@@ -100,6 +99,11 @@ export const deleteAccount = async (id: string) => {
 
     // Delete all the user's playlists
     await prisma.playlist.deleteMany({
+      where: { user_id: id },
+    });
+
+    // Delete all the user's listening history
+    await prisma.userListeningHistory.deleteMany({
       where: { user_id: id },
     });
 
@@ -133,4 +137,30 @@ export const deleteAccount = async (id: string) => {
   }
 
   redirect("/");
+};
+export const updateListeningHistory = async (trackId: string) => {
+  const user = await currentUser();
+
+  if (!user || !user.id) {
+    return { error: "Unauthorized" };
+  }
+
+  await prisma.userListeningHistory.upsert({
+    where: {
+      user_id_track_id: {
+        user_id: user.id,
+        track_id: trackId,
+      },
+    },
+    update: {
+      playCount: {
+        increment: 1,
+      },
+    },
+    create: {
+      user_id: user.id,
+      track_id: trackId,
+      playCount: 1,
+    },
+  });
 };

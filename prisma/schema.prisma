@@ -24,6 +24,7 @@ model User {
   playlists             Playlist[]
   favorites             FavoriteTrack[]
   userTracks            UserTrack[] 
+  userListeningHistory  UserListeningHistory[]
 }
 model Account {
   id                 String  @id @default(cuid())
@@ -79,18 +80,19 @@ model Album {
   tracks        Track[]
 }
 model Track {
-  id          String    @id @default(cuid())
-  name        String    @db.VarChar
-  image       String?
-  audio_url   String    @db.VarChar
-  album_id    String    @map("album_id")
-  artist_id   String    @map("artist_id")
-  created_at  DateTime  @default(now())
+  id                    String    @id @default(cuid())
+  name                  String    @db.VarChar
+  image                 String?
+  audio_url             String    @db.VarChar
+  album_id              String    @map("album_id")
+  artist_id             String    @map("artist_id")
+  created_at            DateTime  @default(now())
 
-  album       Album?    @relation(fields: [album_id], references: [id], onDelete: Cascade)
-  artist      Artist?   @relation(fields: [artist_id], references: [id], onDelete: Cascade)
-  playlists   PlaylistTrack[] 
-  favorites    FavoriteTrack[]
+  album                 Album?    @relation(fields: [album_id], references: [id], onDelete: Cascade)
+  artist                Artist?   @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+  playlists             PlaylistTrack[] 
+  favorites             FavoriteTrack[]
+  userListeningHistory  UserListeningHistory[]
 }
 model Playlist {
   id                    String                   @id @default(cuid())
@@ -133,4 +135,15 @@ model UserTrack {
 
   user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade) 
   created_at  DateTime  @default(now())   
+}
+model UserListeningHistory {
+  id        String   @id @default(cuid())
+  user_id    String
+  track_id    String
+  playCount Int      @default(0)
+
+  user      User     @relation(fields: [user_id], references: [id])
+  track     Track     @relation(fields: [track_id], references: [id])
+
+  @@unique([user_id, track_id])
 }
