@@ -1,3 +1,5 @@
+import { generateMonthlySummaryEmail } from "@/server/actions/user";
+import { getMonthlyUserStats } from "@/server/data/user";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 
@@ -43,5 +45,24 @@ export const sendResetPasswordOTP = async (
     console.log("Reset Password OTP sent");
   } catch (error) {
     console.error("Error sending reset password OTP:", error);
+  }
+};
+
+export const sendMonthlySummary = async () => {
+  const userStats = await getMonthlyUserStats();
+
+  for (const { email, tracks, totalPlayCount } of userStats) {
+    const emailContent = generateMonthlySummaryEmail(tracks, totalPlayCount);
+
+    try {
+      await transporter.sendMail({
+        from: '"Musify" <no-reply@musify.com>',
+        to: email,
+        subject: "Your Monthly Musify Summary",
+        html: emailContent,
+      });
+    } catch (error) {
+      console.error(`Error sending monthly summary to ${email}:`, error);
+    }
   }
 };

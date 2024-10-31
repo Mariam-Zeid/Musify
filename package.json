@@ -30,6 +30,7 @@
     "lucide-react": "^0.452.0",
     "next": "^14.2.15",
     "next-auth": "^5.0.0-beta.25",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
     "react": "^18",
     "react-dom": "^18",
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
+    "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.16",
     "@types/react": "^18",
     "@types/react-dom": "^18",

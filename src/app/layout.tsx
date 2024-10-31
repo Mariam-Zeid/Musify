@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
+import cron from "node-cron";
 
 import "./globals.css";
 import { auth } from "@/auth";
@@ -11,6 +12,7 @@ import Navbar from "@/components/shared/navbar/navbar";
 import Loading from "@/components/shared/loading/loading";
 import MusicPlayer from "@/components/shared/music player/musicPlayer";
 import ReactQueryProvider from "@/providers/reactQueryProvider";
+import { sendMonthlySummary } from "@/lib/mail";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +27,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
+
+  // Schedule to run on the first day of each month at 8:00 AM
+  cron.schedule("0 8 1 * *", sendMonthlySummary);
+  
   return (
     <html lang="en">
       <body className={inter.className}>

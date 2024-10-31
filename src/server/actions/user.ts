@@ -164,3 +164,19 @@ export const updateListeningHistory = async (trackId: string) => {
     },
   });
 };
+
+export const generateMonthlySummaryEmail = (
+  tracks: { name: string; playCount: number }[],
+  totalPlayCount: number
+) => {
+  const trackListHtml = tracks
+    .map((track) => `<p>${track.name}: ${track.playCount} plays</p>`)
+    .join("");
+
+  return `
+    <h1>Monthly Listening Summary</h1>
+    <p>Here’s a summary of your listening activity for the month:</p>
+    ${trackListHtml}
+    <p><strong>Total Plays:</strong> ${totalPlayCount}</p>
+  `;
+};
