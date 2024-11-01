@@ -67,6 +67,7 @@ export const config = {
     "/",
     "/artists",
     "/artists/(.*)",
+    "/dashboard",
     "/(api|trpc)(.*)",
   ],
 };
