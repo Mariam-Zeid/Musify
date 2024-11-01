@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   getAllTracks,
+  getTopTracks,
   getTrackById,
   getTracksByAlbumId,
   getTracksByArtistName,
@@ -32,6 +33,13 @@ export const useAlbumTracks = ({ albumId }: { albumId: string }) => {
   return useQuery({
     queryKey: ["album-tracks"],
     queryFn: async () => await getTracksByAlbumId(albumId),
+    staleTime: 1000 * 60 * 5,
+  });
+};
+export const useTopTracks = () => {
+  return useQuery({
+    queryKey: ["top-tracks"],
+    queryFn: async () => await getTopTracks(),
     staleTime: 1000 * 60 * 5,
   });
 };

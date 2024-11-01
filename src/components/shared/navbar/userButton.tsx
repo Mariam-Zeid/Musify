@@ -4,6 +4,7 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { BiLogOut } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -14,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCurrentUser } from "@/client/store/useCurrentUser";
+import { UserRole } from "@prisma/client";
 
 const UserButton = () => {
   const router = useRouter();
@@ -48,6 +50,17 @@ const UserButton = () => {
             <FaUser className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
+          {user?.role === UserRole.ADMIN && (
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                router.push(`/dashboard`);
+              }}
+            >
+              <MdDashboard className="mr-2 h-4 w-4" />
+              <span>Dashboard</span>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
             <BiLogOut className="mr-2 h-4 w-4" />
             <span>Logout</span>

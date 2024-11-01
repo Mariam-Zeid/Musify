@@ -1,7 +1,18 @@
 "use server";
 
 import { prisma } from "@/server/db";
+import { UserRole } from "@prisma/client";
 
+export const getAllMembers = async () => {
+  try {
+    const members = await prisma.user.findMany({
+      where: { role: UserRole.USER },
+    });
+    return members;
+  } catch {
+    return null;
+  }
+};
 export const getUserById = async (id: string) => {
   try {
     const user = await prisma.user.findUnique({ where: { id } });

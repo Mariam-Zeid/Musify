@@ -164,7 +164,6 @@ export const updateListeningHistory = async (trackId: string) => {
     },
   });
 };
-
 export const generateMonthlySummaryEmail = (
   tracks: { name: string; playCount: number }[],
   totalPlayCount: number
@@ -180,3 +179,9 @@ export const generateMonthlySummaryEmail = (
     <p><strong>Total Plays:</strong> ${totalPlayCount}</p>
   `;
 };
+export const deleteMemberById = async (id: string) => {
+  return await prisma.user.delete({
+    where: { id },
+  });
+};
+

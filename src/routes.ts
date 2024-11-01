@@ -36,6 +36,7 @@ export const adminRoutes: string[] = [
   "/new-artist",
   "/new-album",
   "/new-track",
+  "/dashboard",
 ];
 
 /**

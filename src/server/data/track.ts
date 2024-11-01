@@ -34,6 +34,38 @@ export const getTracksByArtistName = async (name: string) => {
     return [];
   }
 };
+export const getTopTracks = async () => {
+  const topTracksHistory = await prisma.userListeningHistory.groupBy({
+    by: ["track_id"],
+    _sum: {
+      playCount: true,
+    },
+    orderBy: {
+      _sum: {
+        playCount: "desc",
+      },
+    },
+    take: 5,
+  });
+
+  const trackIds = topTracksHistory.map((track) => track.track_id);
+  const tracks = await prisma.track.findMany({
+    where: {
+      id: {
+        in: trackIds,
+      },
+    },
+  });
+
+  return topTracksHistory.map((trackHistory) => {
+    const track = tracks.find((t) => t.id === trackHistory.track_id);
+    return {
+      track_id: trackHistory.track_id,
+      playCount: trackHistory._sum.playCount,
+      track_name: track?.name,
+    };
+  });
+};
 export const getTrackById = async (id: string) => {
   try {
     const track = await prisma.track.findUnique({
