@@ -83,6 +83,7 @@ model Track {
   id                    String    @id @default(cuid())
   name                  String    @db.VarChar
   image                 String?
+  year                  Int?
   audio_url             String    @db.VarChar
   album_id              String    @map("album_id")
   artist_id             String    @map("artist_id")

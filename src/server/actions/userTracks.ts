@@ -4,6 +4,7 @@ import { prisma } from "@/server/db";
 import { addUserTrackSchema, AddUserTrackSchema } from "@/lib/validations/user";
 import { currentUser } from "@/server/currentUser";
 import { getUserTrackByName } from "@/server/data/userTrack";
+import { redirect } from "next/navigation";
 
 export async function addUserTrack(values: AddUserTrackSchema) {
   const isValidated = addUserTrackSchema.safeParse(values);
@@ -33,6 +34,7 @@ export async function addUserTrack(values: AddUserTrackSchema) {
       user_id: user.id,
     },
   });
+  redirect("/profile/user-songs");
 }
 export async function deleteUserTrack(id: string) {
   await prisma.userTrack.delete({

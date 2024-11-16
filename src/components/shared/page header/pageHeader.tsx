@@ -5,6 +5,7 @@ import Image from "next/image";
 import DeleteButton from "./deleteButton";
 import LinkButton from "./linkButton";
 import { useCurrentRole } from "@/client/store/useCurrentUser";
+import { Button } from "@/components/ui/button";
 
 interface PageHeaderProps {
   imageSrc?: string;
@@ -83,11 +84,16 @@ const PageHeader = ({
                 onDelete={onDelete || (() => {})}
               />
             )}
-            {isAdmin && type &&
+            {type === "recommended" && (
+              <Button variant="musify" onClick={onDelete}>show recommend songs</Button>
+            )}
+            {isAdmin &&
+              type &&
               type !== "user" &&
               type !== "favorites" &&
               type !== "userSongs" &&
-              type !== "playlist" && (
+              type !== "playlist" &&
+              type !== "recommended" && (
                 <>
                   <LinkButton href={linkHref || ""} text={linkText || ""} />
                   <DeleteButton

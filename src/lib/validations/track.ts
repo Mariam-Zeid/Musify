@@ -6,6 +6,7 @@ export const addTrackSchema = z.object({
   audio_url: z.any(),
   album_id: z.string(),
   artist_id: z.string(),
+  year: z.number(),
 });
 
 export type AddTrackSchema = z.infer<typeof addTrackSchema>;

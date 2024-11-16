@@ -16,7 +16,7 @@ export const useAllTracks = () => {
     queryFn: async () => await getAllTracks(),
     staleTime: 1000 * 60 * 5,
   });
-}
+};
 export const useTracksByNameOrArtist = ({ query }: { query: string }) => {
   return useQuery({
     queryKey: ["tracks", query],
@@ -31,9 +31,10 @@ export const useTracksByNameOrArtist = ({ query }: { query: string }) => {
 };
 export const useAlbumTracks = ({ albumId }: { albumId: string }) => {
   return useQuery({
-    queryKey: ["album-tracks"],
+    queryKey: ["album-tracks", albumId],
     queryFn: async () => await getTracksByAlbumId(albumId),
     staleTime: 1000 * 60 * 5,
+    enabled: !!albumId,
   });
 };
 export const useTopTracks = () => {

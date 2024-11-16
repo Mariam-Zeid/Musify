@@ -27,6 +27,12 @@ const Library = () => {
       </div>
       {user ? (
         <>
+          <Link href="/profile/recommended-songs">
+            <SongItem
+              title="Recommended Songs"
+              imageSrc="/images/recommendations.jpg"
+            />
+          </Link>
           <Link href="/profile/favorites">
             <SongItem title="Liked Songs" />
           </Link>
