@@ -148,8 +148,7 @@ from collections import defaultdict  # For creating a dictionary with default va
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='086ce9273ec149168816ac82214269e1', client_secret='6ffa5cc37b944f63a28b820b5f7044ef'))
 # SpotifyClientCredentials: Manages authentication using client_id and client_secret
 # Replace 'client_id' and 'client_secret' with your actual Spotify API credentials
-
-
+# print(sp.track("52PEMnAiQbYGnxBCHQTF5E"))
 
 def find_song(name, year):
     # Function to find a song by name and year and return its data as a DataFrame
@@ -163,6 +162,7 @@ def find_song(name, year):
     # Extracts the first item from the search results
     track_id = results['id']  # Gets the track ID
     audio_features = sp.audio_features(track_id)[0]
+    # print(sp.track(track_id=track_id))
     # Retrieves audio features for the track using its ID
 
     # Store relevant track information in the song_data dictionary
@@ -172,7 +172,8 @@ def find_song(name, year):
     song_data['duration_ms'] = [results['duration_ms']]
     song_data['popularity'] = [results['popularity']]
     song_data['url'] = [results['preview_url']]
-
+    song_data['imageUrl'] = [results['album']['images']]
+    # print(results['album']['images'])
     # Store audio features in the song_data dictionary
     for key, value in audio_features.items():
         song_data[key] = value
@@ -264,11 +265,13 @@ def recommend_songs(song_list, spotify_data, n_songs=10):
     for song in returnSongs:
         # print
         _,getSong = find_song(song['name'],song['year'])
+        print(getSong)
         if getSong is None:
             continue
         actualSongs.append(getSong)
+        break;
     
     # print(actualSongs)
-    return actualSongs
+    return actualSongs 
     # Returns the recommended songs as a list of dictionaries with metadata columns
 recommend_songs([{'name': 'Shut Up And Drive', 'year':2003},{'name':'Kings & Queens','year':2000}],  data,10)
