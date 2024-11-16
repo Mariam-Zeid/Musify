@@ -1,6 +1,7 @@
-import { deleteMemberById } from "@/server/actions/user";
-import { getAllMembers } from "@/server/data/user";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { deleteMemberById } from "@/server/actions/user";
+import { getAllMembers, getUserListeningHistory } from "@/server/data/user";
 
 export const useAllMembers = () => {
   return useQuery({
@@ -18,5 +19,13 @@ export const useDeleteMember = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-members"] });
     },
+  });
+};
+
+export const useUserListeningHistory = () => {
+  return useQuery({
+    queryKey: ["user-listening-history"], // Cache the query by userId
+    queryFn: async () => await getUserListeningHistory(),
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 };

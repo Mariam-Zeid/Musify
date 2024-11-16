@@ -16,7 +16,7 @@ export const addTrack = async (values: AddTrackSchema) => {
     return { error: "Invalid credentials!" };
   }
 
-  const { name, image, audio_url, artist_id, album_id } = validatedFields.data;
+  const { name, image, audio_url, artist_id, album_id, year } = validatedFields.data;
 
   // Verify artist and album exist
   const artistExists = await getArtistById(artist_id);
@@ -34,8 +34,15 @@ export const addTrack = async (values: AddTrackSchema) => {
   if (!image) {
     validatedFields.data.image = null;
   }
+
+  if (!year){
+    validatedFields.data.year = new Date().getFullYear();
+  }
+  if (year && year < 0) {
+    return { error: "Enter a valid year" };
+  }
   await prisma.track.create({
-    data: { name: name.toLowerCase(), image, audio_url, artist_id, album_id },
+    data: { name: name.toLowerCase(), image, audio_url, artist_id, album_id, year },
   });
 
   redirect(`/artists/${artist_id}/${album_id}`);

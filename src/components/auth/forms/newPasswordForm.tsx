@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import FormAction from "@/components/shared/form/formAction";
-import { loginSchema } from "@/lib/validations/auth";
+import { newPasswordSchema } from "@/lib/validations/auth";
 import { newPassword } from "@/server/actions/auth";
 
 const NewPasswordForm = () => {
@@ -21,7 +21,7 @@ const NewPasswordForm = () => {
 
   return (
     <FormAction
-      schema={loginSchema}
+      schema={newPasswordSchema}
       defaultValues={{
         password: "",
       }}

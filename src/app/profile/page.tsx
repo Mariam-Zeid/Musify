@@ -50,6 +50,12 @@ const ProfilePage = () => {
         <Link href="/profile/playlists/new-playlist">Create Playlist</Link>
       </Button>
       <SongCardListWrapper>
+        <Link href="/profile/recommended-songs">
+          <SongCard
+            title="Recommended Songs"
+            imageSrc="/images/recommendations.jpg"
+          />
+        </Link>
         <Link href="/profile/favorites">
           <SongCard title="Favorites" />
         </Link>

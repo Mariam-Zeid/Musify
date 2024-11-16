@@ -78,12 +78,16 @@ const NewTrackForm = ({ artistId, albumId }: NewTrackFormProps) => {
       dataToSubmit.audio_url = url;
     }
 
+    if (values.year) {
+      values.year = parseInt(values.year, 10);
+    }
     const result = await addTrack({
       name: dataToSubmit.name,
       image: dataToSubmit.image,
       audio_url: dataToSubmit.audio_url,
       artist_id: artistId,
       album_id: albumId,
+      year: dataToSubmit.year,
     });
     if (result?.error) {
       setFormError(result.error);
@@ -122,6 +126,12 @@ const NewTrackForm = ({ artistId, albumId }: NewTrackFormProps) => {
           label: "Track Audio",
           type: "file",
           accept: "audio/*",
+        },
+        {
+          name: "year",
+          label: "Release Year",
+          type: "number",
+          placeholder: "2024",
         },
       ]}
       title="Add New Track"
