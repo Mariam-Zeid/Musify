@@ -22,6 +22,14 @@ export const getUserById = async (id: string) => {
     return null;
   }
 };
+export const getUserByName = async (name: string) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { name } });
+    return user;
+  } catch {
+    return null;
+  }
+}
 export const getUserByEmail = async (email: string) => {
   try {
     const user = await prisma.user.findUnique({ where: { email } });
@@ -41,8 +49,41 @@ export const getAccountByUserId = async (userId: string) => {
     return null;
   }
 };
-export const getMonthlyUserStats = async () => {
-  const users = await prisma.user.findMany({
+// export const getMonthlyUserStats = async () => {
+//   const users = await prisma.user.findMany({
+//     include: {
+//       userListeningHistory: {
+//         select: {
+//           track: { select: { name: true } },
+//           playCount: true,
+//         },
+//       },
+//     },
+//   });
+
+//   return users.map((user) => {
+//     const totalPlayCount = user.userListeningHistory.reduce(
+//       (sum, history) => sum + history.playCount,
+//       0
+//     );
+
+//     const tracks = user.userListeningHistory.map((history) => ({
+//       name: history.track?.name ?? "Unknown Track",
+//       playCount: history.playCount,
+//     }));
+
+//     return {
+//       email: user.email,
+//       tracks,
+//       totalPlayCount,
+//     };
+//   });
+// };
+export const getLoggedInUserStats = async () => {
+  const loggedUser = await currentUser();
+  const loggedInUserId = loggedUser?.id;
+  const user = await prisma.user.findUnique({
+    where: { id: loggedInUserId },
     include: {
       userListeningHistory: {
         select: {
@@ -53,23 +94,25 @@ export const getMonthlyUserStats = async () => {
     },
   });
 
-  return users.map((user) => {
-    const totalPlayCount = user.userListeningHistory.reduce(
-      (sum, history) => sum + history.playCount,
-      0
-    );
+  if (!user) {
+    throw new Error("User not found");
+  }
 
-    const tracks = user.userListeningHistory.map((history) => ({
-      name: history.track?.name ?? "Unknown Track",
-      playCount: history.playCount,
-    }));
+  const totalPlayCount = user.userListeningHistory.reduce(
+    (sum, history) => sum + history.playCount,
+    0
+  );
 
-    return {
-      email: user.email,
-      tracks,
-      totalPlayCount,
-    };
-  });
+  const tracks = user.userListeningHistory.map((history) => ({
+    name: history.track?.name ?? "Unknown Track",
+    playCount: history.playCount ?? 0,
+  }));
+
+  return {
+    email: user.email,
+    tracks,
+    totalPlayCount,
+  };
 };
 export const getUserListeningHistory = async () => {
   const user = await currentUser();
@@ -82,8 +125,8 @@ export const getUserListeningHistory = async () => {
       include: {
         track: {
           select: {
-            name: true, 
-            year: true, 
+            name: true,
+            year: true,
           },
         },
       },

@@ -8,7 +8,7 @@ import Loading from "@/components/shared/loading/loading";
 
 const TopArtists = () => {
   const { data: artists, isLoading } = useArtists();
-  const topArtists = artists?.slice(0, 4) || [];
+  const topArtists = artists?.slice(0, 5) || [];
 
   if (isLoading) {
     return <Loading />;

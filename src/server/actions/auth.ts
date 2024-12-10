@@ -7,7 +7,7 @@ import bcrypt, { hash } from "bcryptjs";
 
 import { signIn } from "@/auth";
 import { prisma } from "@/server/db";
-import { getAccountByUserId, getUserByEmail } from "@/server/data/user";
+import { getAccountByUserId, getUserByEmail, getUserByName } from "@/server/data/user";
 import { sendResetPasswordOTP, sendVerificationOTP } from "@/lib/mail";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import {
@@ -144,6 +144,11 @@ export const register = async (values: RegisterSchema) => {
   }
   const { name, email, password } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  const existingName = await getUserByName(name);
+  if (existingName) {
+    return { error: "Username already exists!" };
+  }
 
   const existingEmail = await getUserByEmail(email);
   if (existingEmail) {

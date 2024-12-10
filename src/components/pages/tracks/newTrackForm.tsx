@@ -26,27 +26,104 @@ const NewTrackForm = ({ artistId, albumId }: NewTrackFormProps) => {
     return <Loading />;
   }
 
+  // const onSubmit = async (values: FieldValues) => {
+  //   let imageFile: File | undefined;
+  //   let audioFile: File | undefined;
+  //   let dataToSubmit: FieldValues = values;
+
+  //   if (values.image) {
+  //     imageFile = (values.image as FileList)[0];
+  //     dataToSubmit = { ...values, image: null };
+  //   }
+
+  //   if (values.audio_url) {
+  //     audioFile = (values.audio_url as FileList)[0];
+  //     dataToSubmit = { ...values, audio_url: null };
+  //   }
+
+  //   setFormError(null);
+
+  //   if (imageFile) {
+  //     const uploadPath = `${artist?.name}/albums/${album?.name}/image/${imageFile.name}`;
+  //     const { url, error: uploadError } = await uploadFile(
+  //       imageFile,
+  //       uploadPath,
+  //       "artists"
+  //     );
+  //     if (uploadError) {
+  //       setFormError(`Image upload failed: ${uploadError}`);
+  //       return;
+  //     }
+  //     dataToSubmit = {
+  //       ...values,
+  //       image: url,
+  //     };
+  //   }
+
+  //   if (audioFile) {
+  //     const uploadPath = `${artist?.name}/albums/${album?.name}/tracks/${audioFile.name}`;
+  //     const { url, error: uploadError } = await uploadFile(
+  //       audioFile,
+  //       uploadPath,
+  //       "artists"
+  //     );
+  //     if (uploadError) {
+  //       setFormError(`Audio upload failed: ${uploadError}`);
+  //       return;
+  //     }
+  //     dataToSubmit.audio_url = url;
+  //   }
+
+  //   if (values.year) {
+  //     values.year = parseInt(values.year, 10);
+  //   }
+  //   const result = await addTrack({
+  //     name: dataToSubmit.name,
+  //     image: dataToSubmit.image,
+  //     audio_url: dataToSubmit.audio_url,
+  //     artist_id: artistId,
+  //     album_id: albumId,
+  //     year: dataToSubmit.year,
+  //   });
+  //   if (result?.error) {
+  //     setFormError(result.error);
+  //     await deleteFile(dataToSubmit.image, "artists");
+  //     await deleteFile(dataToSubmit.audio_url, "artists");
+  //     return;
+  //   }
+  // };
+
   const onSubmit = async (values: FieldValues) => {
-    let imageFile: File | undefined;
-    let audioFile: File | undefined;
-    let dataToSubmit: FieldValues = values;
-
-    if (values.image) {
-      imageFile = (values.image as FileList)[0];
-      dataToSubmit = { ...values, image: null };
-    }
-
-    if (values.audio_url) {
-      audioFile = (values.audio_url as FileList)[0];
-      dataToSubmit = { ...values, audio_url: null };
-    }
-
     setFormError(null);
 
+    // Parse and validate form data using Zod
+    const result = addTrackSchema.safeParse({
+      ...values,
+      year: parseInt(values.year, 10), // Convert year to a number
+    });
+
+    if (!result.success) {
+      setFormError("Validation failed. Please check your inputs.");
+      console.error(result.error.format()); // Debug detailed errors
+      return;
+    }
+
+    const validatedData = result.data;
+
+    // Proceed with file uploads and API calls using validated data
+    let imageFile: File | undefined;
+    let audioFile: File | undefined;
+
+    if (validatedData.image) {
+      imageFile = (validatedData.image as FileList)[0];
+    }
+
+    if (validatedData.audio_url) {
+      audioFile = (validatedData.audio_url as FileList)[0];
+    }
+
     if (imageFile) {
-      const uploadPath = `${artist?.name}/albums/${
-        album?.name
-      }/image/${imageFile.name}`;
+      const uploadPath = `${artist?.name}/albums/${album?.name}/image/${imageFile.name}`;
       const { url, error: uploadError } = await uploadFile(
         imageFile,
         uploadPath,
@@ -56,16 +133,11 @@ const NewTrackForm = ({ artistId, albumId }: NewTrackFormProps) => {
         setFormError(`Image upload failed: ${uploadError}`);
         return;
       }
-      dataToSubmit = {
-        ...values,
-        image: url,
-      };
+      validatedData.image = url;
     }
 
     if (audioFile) {
-      const uploadPath = `${artist?.name}/albums/${
-        album?.name
-      }/tracks/${audioFile.name}`;
+      const uploadPath = `${artist?.name}/albums/${album?.name}/tracks/${audioFile.name}`;
       const { url, error: uploadError } = await uploadFile(
         audioFile,
         uploadPath,
@@ -75,28 +147,26 @@ const NewTrackForm = ({ artistId, albumId }: NewTrackFormProps) => {
         setFormError(`Audio upload failed: ${uploadError}`);
         return;
       }
-      dataToSubmit.audio_url = url;
+      validatedData.audio_url = url;
     }
 
-    if (values.year) {
-      values.year = parseInt(values.year, 10);
-    }
-    const result = await addTrack({
-      name: dataToSubmit.name,
-      image: dataToSubmit.image,
-      audio_url: dataToSubmit.audio_url,
+    const apiResult = await addTrack({
+      ...validatedData,
       artist_id: artistId,
       album_id: albumId,
-      year: dataToSubmit.year,
     });
-    if (result?.error) {
-      setFormError(result.error);
-      await deleteFile(dataToSubmit.image, "artists");
-      await deleteFile(dataToSubmit.audio_url, "artists");
+
+    if (apiResult?.error) {
+      setFormError(apiResult.error);
+      if (validatedData.image) {
+        await deleteFile(validatedData.image, "artists");
+      }
+      if (validatedData.audio_url) {
+        await deleteFile(validatedData.audio_url, "artists");
+      }
       return;
     }
   };
-
   return (
     <FormAction
       schema={addTrackSchema}

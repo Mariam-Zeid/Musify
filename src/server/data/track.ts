@@ -40,12 +40,6 @@ export const getTopTracks = async () => {
     _sum: {
       playCount: true,
     },
-    orderBy: {
-      _sum: {
-        playCount: "desc",
-      },
-    },
-    take: 5,
   });
 
   const trackIds = topTracksHistory.map((track) => track.track_id);

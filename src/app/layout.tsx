@@ -30,7 +30,7 @@ export default async function RootLayout({
 
   // Schedule to run on the first day of each month at 8:00 AM
   cron.schedule("0 8 1 * *", sendMonthlySummary);
-  
+
   return (
     <html lang="en">
       <body className={inter.className}>

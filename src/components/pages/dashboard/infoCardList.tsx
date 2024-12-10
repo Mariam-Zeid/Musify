@@ -16,17 +16,17 @@ const InfoCardList = () => {
     >
       <InfoCard
         title="artists"
-        total={50}
+        total={150}
         Icon={FaUsers}
       />
       <InfoCard
         title="albums"
-        total={50}
+        total={380}
         Icon={BiSolidAlbum}
       />
       <InfoCard
         title="tracks"
-        total={50}
+        total={600}
         Icon={IoMusicalNotes}
       />
     </div>

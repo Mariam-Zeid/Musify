@@ -1,5 +1,5 @@
 import { generateMonthlySummaryEmail } from "@/server/actions/user";
-import { getMonthlyUserStats } from "@/server/data/user";
+import { getLoggedInUserStats } from "@/server/data/user";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 
@@ -49,20 +49,20 @@ export const sendResetPasswordOTP = async (
 };
 
 export const sendMonthlySummary = async () => {
-  const userStats = await getMonthlyUserStats();
-
-  for (const { email, tracks, totalPlayCount } of userStats) {
-    const emailContent = generateMonthlySummaryEmail(tracks, totalPlayCount);
-
-    try {
-      await transporter.sendMail({
-        from: '"Musify" <no-reply@musify.com>',
-        to: email,
-        subject: "Your Monthly Musify Summary",
-        html: emailContent,
-      });
-    } catch (error) {
-      console.error(`Error sending monthly summary to ${email}:`, error);
-    }
+  const userStats = await getLoggedInUserStats();
+  const { email, tracks, totalPlayCount } = userStats;
+  const emailContent = await generateMonthlySummaryEmail(
+    tracks,
+    totalPlayCount
+  );
+  try {
+    await transporter.sendMail({
+      from: '"Musify" <onboarding@musify.com>',
+      to: email,
+      subject: "Monthly Listening Summary",
+      html: emailContent,
+    });
+  } catch (error) {
+    console.error("Error sending monthly summary email:", error);
   }
 };
