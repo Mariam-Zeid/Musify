@@ -2,6 +2,7 @@
 
 import { prisma } from "@/server/db";
 import { UserRole } from "@prisma/client";
+import { currentUser } from "../currentUser";
 
 export const getAllMembers = async () => {
   try {
@@ -69,4 +70,33 @@ export const getMonthlyUserStats = async () => {
       totalPlayCount,
     };
   });
+};
+export const getUserListeningHistory = async () => {
+  const user = await currentUser();
+  const userId = user?.id;
+  try {
+    const history = await prisma.userListeningHistory.findMany({
+      where: {
+        user_id: userId,
+      },
+      include: {
+        track: {
+          select: {
+            name: true, 
+            year: true, 
+          },
+        },
+      },
+    });
+
+    const tracks = history.map((entry) => ({
+      name: entry.track.name,
+      year: entry.track.year,
+    }));
+
+    return tracks;
+  } catch (error) {
+    console.error("Error fetching user listening history:", error);
+    throw new Error("Failed to retrieve listening history.");
+  }
 };
