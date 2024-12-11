@@ -143,10 +143,14 @@ fig = px.scatter(projection, x='x', y='y', color='cluster', hover_data=['x', 'y'
 import spotipy  # For accessing the Spotify Web API
 from spotipy.oauth2 import SpotifyClientCredentials  # For managing Spotify credentials
 from collections import defaultdict  # For creating a dictionary with default values
-
+from spotipy.oauth2 import SpotifyOAuth  # For OAuth authentication
 # Initialize the Spotify client with client credentials
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='086ce9273ec149168816ac82214269e1', client_secret='6ffa5cc37b944f63a28b820b5f7044ef'))
-# SpotifyClientCredentials: Manages authentication using client_id and client_secret
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+    client_id='1de7c97eb3d84cf885028f8b97f2ee48',
+    client_secret='4ca8b67159d6470aa10bc5f3053c738b',
+    redirect_uri='http://localhost:3000',
+    scope="user-read-private" 
+))
 # Replace 'client_id' and 'client_secret' with your actual Spotify API credentials
 # print(sp.track("52PEMnAiQbYGnxBCHQTF5E"))
 
@@ -155,13 +159,15 @@ def find_song(name, year):
     song_data = defaultdict()  # Creates a defaultdict to store song data
     results = sp.search(q='track: {} year: {}'.format(name, year), limit=1)
     # Searches for a track on Spotify with the specified name and year, limiting results to 1
+    # print(name)
+    # print(results)
     if results['tracks']['items'] == []:
         return None  # Returns None if no results are found
 
     results = results['tracks']['items'][0]
     # Extracts the first item from the search results
     track_id = results['id']  # Gets the track ID
-    audio_features = sp.audio_features(track_id)[0]
+    # audio_features = sp.audio_features(track_id)[0]
     # print(sp.track(track_id=track_id))
     # Retrieves audio features for the track using its ID
 
@@ -175,8 +181,10 @@ def find_song(name, year):
     song_data['imageUrl'] = [results['album']['images']]
     # print(results['album']['images'])
     # Store audio features in the song_data dictionary
-    for key, value in audio_features.items():
-        song_data[key] = value
+    # for key, value in audio_features.items():
+    #     song_data[key] = value
+    
+    # print(song_data['name'])
 
     return pd.DataFrame(song_data) , song_data
     # Returns the song data as a DataFrame
@@ -195,9 +203,10 @@ def get_song_data(song, spotify_data):
     try:
         song_data = spotify_data[(spotify_data['name'] == song['name']) & (spotify_data['year'] == song['year'])].iloc[0]
         # Attempts to find the song in the provided spotify_data DataFrame
+        # print(song_data)
         return song_data
     except IndexError:
-        return find_song(song['name'], song['year'])
+        return find_song( song['name'],song['year'])
         # If song is not found, attempts to fetch the song data using the Spotify API
 
 def get_mean_vector(song_list, spotify_data):
@@ -205,10 +214,8 @@ def get_mean_vector(song_list, spotify_data):
     song_vectors = []
 
     
-    songList = []
     for song in song_list:
-        song_data_frame ,song_data = get_song_data(song, spotify_data)
-        songList.append(song_data)
+        song_data_frame  = get_song_data(song, spotify_data)
         if song_data_frame is None:
             print('Warning: {} does not exist in Spotify or in database'.format(song['name']))
             continue
@@ -219,7 +226,7 @@ def get_mean_vector(song_list, spotify_data):
 
     song_matrix = np.array(list(song_vectors))
     # print(songList)
-    return np.mean(song_matrix, axis=0) , songList
+    return np.mean(song_matrix, axis=0) 
     # Converts the list of song vectors to a matrix and returns the mean vector
 
 def flatten_dict_list(dict_list):
@@ -239,7 +246,7 @@ def recommend_songs(song_list, spotify_data, n_songs=10):
     metadata_cols = ['name', 'year', 'artists']
     song_dict = flatten_dict_list(song_list)
 
-    song_center , songs = get_mean_vector(song_list, spotify_data)
+    song_center  = get_mean_vector(song_list, spotify_data)
     # Computes the mean vector for the input list of songs
 
     scaler = song_cluster_pipeline.steps[0][1]
@@ -257,21 +264,19 @@ def recommend_songs(song_list, spotify_data, n_songs=10):
     rec_songs = spotify_data.iloc[index]
     # Retrieves the recommended songs from the spotify_data DataFrame
     rec_songs = rec_songs[~rec_songs['name'].isin(song_dict['name'])]
+    # print(rec_songs)
     # Removes songs that are already in the input song list
     returnSongs = rec_songs[metadata_cols].to_dict(orient='records')
     
-    # print(returnSongs)
     actualSongs = []
     for song in returnSongs:
-        # print
         _,getSong = find_song(song['name'],song['year'])
-        print(getSong)
         if getSong is None:
             continue
         actualSongs.append(getSong)
-        break;
+        
     
     # print(actualSongs)
     return actualSongs 
     # Returns the recommended songs as a list of dictionaries with metadata columns
-recommend_songs([{'name': 'Shut Up And Drive', 'year':2003},{'name':'Kings & Queens','year':2000}],  data,10)
+print(recommend_songs([{'name': 'That Look', 'year':2015}],  data,10))
