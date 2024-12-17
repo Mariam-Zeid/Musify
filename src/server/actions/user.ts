@@ -48,6 +48,12 @@ export const updateUser = async (values: UpdateAccountSchema) => {
       return { error: "The current password is incorrect" };
     }
 
+    if (password === newPassword) {
+      return {
+        error: "The new password cannot be the same as the current one",
+      };
+    }
+
     const hashedPassword = await hash(newPassword, 10);
 
     await prisma.user.update({
@@ -184,4 +190,3 @@ export const deleteMemberById = async (id: string) => {
     where: { id },
   });
 };
-

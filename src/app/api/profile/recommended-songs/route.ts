@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const response = await fetch("http://127.0.0.1:5001/recommend", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ songs, numberOfSongs: numberOfSongsInt }),
+      body: JSON.stringify({ songs: songs, numberOfSongs: numberOfSongsInt }),
     });
 
     if (!response.ok) {
